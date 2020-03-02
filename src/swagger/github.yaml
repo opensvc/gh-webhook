@@ -1,0 +1,196 @@
+openapi: "3.0.0"
+info:
+  title: github webhook receiver
+  version: 0.0.1
+paths:
+  /pullrequest:
+    post:
+      operationId: controllers.events.pull_request
+      summary: Receive pull request webhook from github
+      parameters:
+        - in: header
+          name: X-GitHub-Event
+          schema:
+            type: string
+            enum:
+              - pull_request
+          required: true
+        - in: header
+          name: X-Hub-Signature
+          schema:
+            type: string
+            pattern: ^sha1=[a-z0-9]+$
+          required: true
+      requestBody:
+        $ref: '#/components/requestBodies/PullRequest'
+
+      responses:
+        '200':
+          description: |-
+            200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultResponse'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /push:
+    post:
+      operationId: controllers.events.push
+      summary: Receive pull request webhook from github
+      parameters:
+        - in: header
+          name: X-GitHub-Event
+          schema:
+            type: string
+            enum:
+              - push
+          required: true
+        - in: header
+          name: X-Hub-Signature
+          schema:
+            type: string
+            pattern: ^sha1=[a-z0-9]+$
+          required: true
+      requestBody:
+        $ref: '#/components/requestBodies/Push'
+
+      responses:
+        '200':
+          description: |-
+            200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultResponse'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  requestBodies:
+    PullRequest:
+      description: A JSON for pull request
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PullRequest'
+    Push:
+      description: A JSON for push event
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Push'
+  schemas:
+    DefaultResponse:
+      description: default response
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+    PullRequest:
+      description: github pull request event
+      type: object
+      required:
+        - action
+        - number
+        - pull_request
+      properties:
+        action:
+          type: string
+          enum:
+            - opened
+            - closed
+            - reopened
+            - edited
+            - assigned
+            - unassigned
+            - review_requested
+            - review_request_removed
+            - labeled
+            - unlabeled
+            - synchronize
+            - ready_for_review
+            - locked
+            - unlocked
+        number:
+          type: integer
+          minimum: 1
+          maximum: 9999
+        pull_request:
+          type: object
+          required:
+            - title
+          properties:
+            title:
+              type: string
+            html_url:
+              type: string
+              format: url
+            user:
+              type: object
+              required:
+                - login
+              properties:
+                login:
+                  type: string
+    Push:
+      description: github push event
+      type: object
+      required:
+        - pusher
+        - ref
+        - head_commit
+      properties:
+        ref:
+          type: string
+          pattern: ^refs/heads/master$
+        pusher:
+          type: object
+          required:
+            - name
+            - email
+          properties:
+            name:
+              type: string
+              maxLength: 40
+              pattern: ^[a-zA-Z0-9- ]*$
+            email:
+              type: string
+              format: email
+        head_commit:
+          type: object
+          required:
+            - id
+            - message
+          properties:
+            id:
+              type: string
+              pattern: ^[a-z0-9]+$
+              maxLength: 40
+            message:
+              type: string
+              example: 'Merge pull request #4 from divers-cyril/master'
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
