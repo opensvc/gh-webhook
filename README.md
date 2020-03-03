@@ -23,13 +23,14 @@ bundled `runner_lib method: http_post
 * start webhook listener
 
         # Default environments settings
+        # HOST=127.0.0.1
         # PORT=8080
         # APIS="swagger/github.yaml"
         
         export EXTRA_LIB=~/extra_lib
         export SECRET=the-secret-defined-on-github-webhook
         export JOB_CONFIG=~/.config/job.json
-        python src/app.py
+        python src/kapp.py
 
 ## jobs config file (environment variable: JOB_CONFIG)
 job config file is a json file, that define keys.

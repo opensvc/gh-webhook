@@ -14,6 +14,7 @@ def main():
     logging.info('EXTRA_LIB=%s', extra_path)
 
     port = int(os.environ.get("PORT", 8080))
+    host = os.environ.get("HOST", "127.0.0.1")
 
     app = connexion.App(__name__)
     apis = os.environ.get('APIS', os.path.join('swagger', 'github.yaml'))
@@ -21,8 +22,8 @@ def main():
         logging.info('adding api from %s', api)
         app.add_api(api)
 
-    logging.info(f'start app listen on port {port}')
-    app.run(port=port)
+    logging.info(f'webhook-job app listen on {host}:{port}')
+    app.run(host=host, port=port)
 
 
 if __name__ == '__main__':
