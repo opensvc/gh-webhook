@@ -2,7 +2,7 @@
 
 webhook job processor supporting github webhook for pull request, push.
 
-bundled `runner_lib method: http_post
+bundled `runner_lib method: http_post`
 
 ## how to use
 
