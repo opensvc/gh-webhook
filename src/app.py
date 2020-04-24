@@ -6,6 +6,7 @@ import connexion
 
 def main():
     extra_path = os.environ.get('EXTRA_LIB')
+    branches = os.environ.get('BRANCHES', '(master)')
 
     logging.basicConfig(level=logging.INFO)
 
@@ -20,7 +21,7 @@ def main():
     apis = os.environ.get('APIS', os.path.join('swagger', 'github.yaml'))
     for api in apis.split():
         logging.info('adding api from %s', api)
-        app.add_api(api)
+        app.add_api(api, arguments={'branches': branches})
 
     logging.info(f'webhook-job app listen on {host}:{port}')
     app.run(host=host, port=port)

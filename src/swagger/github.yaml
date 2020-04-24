@@ -156,7 +156,7 @@ components:
       properties:
         ref:
           type: string
-          pattern: ^refs/heads/master$
+          pattern: ^refs/heads/{{branches}}
         pusher:
           type: object
           required:
