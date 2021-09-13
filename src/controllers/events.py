@@ -12,3 +12,7 @@ def pull_request(body):
 @verify
 def push(body):
     return job_factory.create(context_lib_name='github_push', payload=body).run()
+
+@verify
+def release(body):
+    return job_factory.create(context_lib_name='github_release', payload=body).run()

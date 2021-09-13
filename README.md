@@ -1,10 +1,10 @@
 # webhook job runner (support github webhook)
 
-webhook job processor supporting github webhook for pull request, push.
+webhook job processor supporting github webhook for pull request, push, release.
 
 when SECRET env var is defined signature is verified
 
-bundled `runner_lib method: http_post`
+bundled `runner_lib method: http_post, release`
 
 ## how to use
 
@@ -15,6 +15,11 @@ bundled `runner_lib method: http_post`
         mkdir -p ~/extra_lib/job_payload/
         cp <your python job_payload python files>  ~/extra_lib/job_payload/
 
+  if custom runner
+
+        mkdir -p ~/extra_lib/runner/
+        cp <your python runner python files>  ~/extra_lib/runner/
+    
 * Prepare your job definition file
 
   see bellow for `jobs config file` details
@@ -47,11 +52,38 @@ job config file is a json file, that define keys.
                 "uri": "uri used to create job",
                 "credentials": {},
                 "payload_lib": "a_lib_to_create_job_payload_for_uri"
-                "tls": true
+                "tls": true,
+                "release_files": ["asset_file1_to_release", "asset_file2_to_release"],
+                "release_base_dir": "base dir path for release"
             }
         } 
     }
 
+    # Needed prop for default 'release' event:
+      - release_files
+      - release_base_dir
+
+    # Needed prop for 'pull_request:...', 'push' events with 'http_post' runner_lib
+      - uri
+      - credentials
+      - payload_lib
+      - tls
+
+## bundled runner libs
+
+### http_post
+
+    create payload from <payload_lib>
+    POST <uri> header=<credentials> json=payload verify=<tls>
+
+### release
+
+    When release event action is 'published'
+      for each <file> from <release_files>
+        download <repository html_url>/<event release tag_name>/<file>
+        install downloaded file to <release_base_dir>/<event release tag_name>/
+
+## job config examples
 ### jobs config file example for github
 
 Here is an example of github webhook listener for repository https://github.com/opensvc/webhook
@@ -67,8 +99,8 @@ Pull request open will launch the following job:
 
 
     {
-      "https://github.com/opensvc/webhook": {
-        "pr_opened": {
+      "https://github.com/opensvc/repository": {
+        "pull_request:opened": {
           "runner_lib": "http_post",
           "uri": "https://rundeck.domain/api/27/job/job-xxx-pr/run",
           "credentials": {"X-Rundeck-Auth-Token": "the-job-token"},
@@ -80,6 +112,19 @@ Pull request open will launch the following job:
           "credentials": {"X-Rundeck-Auth-Token": "the-job-token"},
           "payload_lib": "job-example-pr-push"
         }
+        "release": {
+          "runner_lib": "release",
+          "release_files": ["index.js", "index.html"],
+          "release_base_dir": "/deploy_dir"
+        }
+      },
+      "https://github.com/opensvc/other": {
+        "release": {
+          "runner_lib": "release_custom1",
+          "release_files": ["index.js", "index.html"],
+          "release_base_dir": "/deploy_dir"
+        }
+      }
     }
 
 ## extra_lib directory
@@ -89,6 +134,9 @@ Pull request open will launch the following job:
                            |_ job-example-pr-opened.py
                            |_ job-example-push.py
  
+             |_ runner/
+                           |_ release_custom1.py
+
 ## payload libs
 ### depending on your jobs, you may create a payload lib for each jobs
 a job payload lib must define a `class JobPayloadProvider(PayloadProviderAbstract)`
@@ -98,7 +146,7 @@ This class must define method: `def __call__(context: Context):` that will provi
 * `context` attribute that can be used to create job payload
   context objects are instance of `ContextAbstract` sub classes
 
-### minimum lib
+### minimum payload lib
 
     from context.github_push import Context
     from job_payload.payload_abstract import PayloadProviderAbstract
@@ -126,6 +174,20 @@ This class must define method: `def __call__(context: Context):` that will provi
                     "code-to-test": f"{context.commit_id}"
                 }
             }
+
+### example custom release lib
+
+    from runner.release_runner import Runner as ReleaseRunner
+    
+    
+    class Runner(ReleaseRunner):
+      def extra_action(self, job):
+        return "current link updated:..."
+      
+      def release_dir(self, job):
+        tag_name = job.context.tag_name.lstrip("v")
+        api_version = tag_name.split(".")[0]
+        return "%s/%s/%s" % (job.release_base_dir, api_version, tag_name)
 
 ## Example of github event listener for github pull requests
 
