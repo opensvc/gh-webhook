@@ -1,7 +1,7 @@
 openapi: "3.0.0"
 info:
   title: github webhook receiver
-  version: 0.0.1
+  version: 0.1.0
 paths:
   /pullrequest:
     post:
@@ -75,6 +75,41 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
+  /release:
+    post:
+      operationId: controllers.events.release
+      summary: Receive release request webhook from github
+      parameters:
+        - in: header
+          name: X-GitHub-Event
+          schema:
+            type: string
+            enum:
+              - release
+          required: true
+        - in: header
+          name: X-Hub-Signature
+          schema:
+            type: string
+            pattern: ^sha1=[a-z0-9]+$
+          required: true
+      requestBody:
+        $ref: '#/components/requestBodies/Release'
+
+      responses:
+        '200':
+          description: |-
+            200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefaultResponse'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
   requestBodies:
     PullRequest:
@@ -91,6 +126,13 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Push'
+    Release:
+      description: A JSON for release event
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Release'
   schemas:
     DefaultResponse:
       description: default response
@@ -183,6 +225,52 @@ components:
             message:
               type: string
               example: 'Merge pull request #4 from divers-cyril/master'
+    Release:
+      description: github release event
+      type: object
+      required:
+        - action
+        - release
+        - repository
+      properties:
+        action:
+          type: string
+          enum:
+            - published
+            - released
+            - created
+        release:
+          type: object
+          required:
+            - name
+            - tag_name
+            - draft
+            - prerelease
+            - target_commitish
+          properties:
+            name:
+              type: string
+              maxLength: 100
+              pattern: ^[a-zA-Z0-9- .]*$
+            tag_name:
+              type: string
+              maxLength: 100
+              pattern: ^[a-zA-Z0-9- .]*$
+            draft:
+              type: boolean
+            prerelease:
+              type: boolean
+            target_commitish:
+              type: string
+        repository:
+          type: object
+          required:
+            - html_url
+          properties:
+            html_url:
+              type: string
+              pattern: ^https://[a-z0-9/.-]+$
+              maxLength: 200
     Error:
       type: object
       required:

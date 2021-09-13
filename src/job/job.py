@@ -8,13 +8,19 @@ from context.context_abstract import ContextAbstract
 @dataclass(order=True)
 class Job:
     runner_lib: str = 'null_runner'
+    context: ContextAbstract = field(default_factory=ContextAbstract)
+    runner = None
+
+    # for http runners
     uri: str = None
     credentials: dict = field(default_factory=dict)
     tls: bool = True
     payload_lib: str = None
-    context: ContextAbstract = field(default_factory=ContextAbstract)
-    runner = None
     payload_provider = None
+
+    # for release runners
+    release_files: list = field(default_factory=list)
+    release_base_dir: str = ""
 
     def execute(self):
         if self.runner is not None:
