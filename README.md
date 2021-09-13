@@ -2,6 +2,8 @@
 
 webhook job processor supporting github webhook for pull request, push.
 
+when SECRET env var is defined signature is verified
+
 bundled `runner_lib method: http_post`
 
 ## how to use
