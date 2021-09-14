@@ -7,7 +7,7 @@ from context.context_abstract import ContextAbstract
 
 @dataclass(order=True)
 class Job:
-    runner_lib: str = 'null_runner'
+    runner_lib: str = 'null'
     context: ContextAbstract = field(default_factory=ContextAbstract)
     runner = None
 
