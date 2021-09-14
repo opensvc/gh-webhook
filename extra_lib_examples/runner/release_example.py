@@ -1,9 +1,24 @@
+import os
+
 from runner.release import Runner as ReleaseRunner
 
 
 class Runner(ReleaseRunner):
     def extra_action(self, job):
-        return " current link updated:..."
+        """
+        update symlink <api_version>/current -> <tag>/bundle
+        """
+        release_dir = self.release_dir(job)
+        version_dir = os.path.dirname(release_dir)
+        current = os.path.join(version_dir, "current")
+        bundle = os.path.join(os.path.basename(release_dir), 'bundle')
+        try:
+            os.unlink(current)
+        except:
+            # ignore broken link
+            pass
+        os.symlink(bundle, current)
+        return f"current {current} is now {bundle}"
 
     def release_dir(self, job):
         """
