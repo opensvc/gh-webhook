@@ -13,7 +13,8 @@ def main():
 
     if extra_path:
         sys.path.append(extra_path)
-    logging.info('EXTRA_LIB=%s', extra_path)
+    logging.info('BRANCHES=%s', branches)
+    logging.info('RELEASE_BRANCHES=%s', release_branches)
 
     port = int(os.environ.get("PORT", 8080))
     host = os.environ.get("HOST", "127.0.0.1")

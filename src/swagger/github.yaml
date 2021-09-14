@@ -262,7 +262,7 @@ components:
               type: boolean
             target_commitish:
               type: string
-              pattern: ^refs/heads/{{release_branches}}
+              pattern: ^{{release_branches}}
         repository:
           type: object
           required:
