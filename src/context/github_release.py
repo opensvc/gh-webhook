@@ -55,6 +55,7 @@ class Context(GitHubAbstract):
         return {
             'action': self.action,
             'name': self.name,
+            'release_name': self.release_name,
             'tag_name': self.tag_name,
             'draft': self.draft,
             'prerelease': self.prerelease,
