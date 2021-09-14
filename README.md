@@ -34,8 +34,10 @@ bundled `runner_lib method: http_post, release`
         # PORT=8080
         # APIS="swagger/github.yaml"
         # BRANCHES="(master)"
+        # RELEASE_BRANCHES="(master)"
         
-        # multiple accepted branch example: BRANCHES="(mybranch|master|anotherbranch)"
+        # multiple accepted branch for push example: BRANCHES="(mybranch|master|anotherbranch)"
+        # multiple accepted branch for release example: RELEASE_BRANCHES="(v1|v2|master)"
         
         export EXTRA_LIB=~/extra_lib
         export SECRET=the-secret-defined-on-github-webhook
