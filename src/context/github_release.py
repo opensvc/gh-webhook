@@ -8,7 +8,7 @@ class Context(GitHubAbstract):
 
     @property
     def event(self):
-        return 'release'
+        return f'release:{self.action}'
 
     @property
     def action(self):
