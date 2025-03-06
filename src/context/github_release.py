@@ -39,6 +39,10 @@ class Context(GitHubAbstract):
         return self.release['prerelease']
 
     @property
+    def login(self):
+        return self.release['author']['login']
+
+    @property
     def target_commitish(self):
         return self.release['target_commitish']
 
@@ -61,4 +65,5 @@ class Context(GitHubAbstract):
             'prerelease': self.prerelease,
             'target_commitish': self.target_commitish,
             'html_url': self.html_url,
+            'login': self.login,
         }
