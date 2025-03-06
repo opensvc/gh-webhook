@@ -6,8 +6,8 @@ import connexion
 
 def main():
     extra_path = os.environ.get('EXTRA_LIB')
-    branches = os.environ.get('BRANCHES', '(master)')
-    release_branches = os.environ.get('RELEASE_BRANCHES', '(master)')
+    branches = os.environ.get('BRANCHES', '(main)')
+    release_branches = os.environ.get('RELEASE_BRANCHES', '(main)')
 
     logging.basicConfig(level=logging.INFO)
 

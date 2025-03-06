@@ -181,12 +181,31 @@ components:
             html_url:
               type: string
               format: url
+            state:
+              type: string
+            closed_at:
+              type: string
+            updated_at:
+              type: string
+            merged_at:
+              type: string
+            merged:
+              type: bool
             user:
               type: object
               required:
                 - login
               properties:
                 login:
+                  type: string
+            base:
+              type: object
+              properties:
+                label:
+                  type: string
+                ref:
+                  type: string
+                sha:
                   type: string
     Push:
       description: github push event
