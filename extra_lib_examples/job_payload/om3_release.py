@@ -15,6 +15,7 @@ class JobPayloadProvider(PayloadProviderAbstract):
             "options": {
                 "job-origin": yaml.safe_dump(job_origin, sort_keys=False),
                 "action": context.action,
+                "code-to-test": context.tag_name,
                 "release-tag": context.tag_name,
                 "release-name": context.release_name,
                 "pre-release": context.prerelease,
