@@ -1,7 +1,7 @@
 openapi: "3.0.0"
 info:
   title: github webhook receiver
-  version: 0.2.0
+  version: 0.2.1
 paths:
   /pullrequest:
     post:
