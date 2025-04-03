@@ -1,7 +1,7 @@
 openapi: "3.0.0"
 info:
   title: github webhook receiver
-  version: 0.2.0
+  version: 0.2.1
 paths:
   /pullrequest:
     post:
@@ -185,12 +185,15 @@ components:
               type: string
             closed_at:
               type: string
+              nullable: true
             updated_at:
               type: string
+              nullable: true
             merged_at:
               type: string
+              nullable: true
             merged:
-              type: bool
+              type: boolean
             user:
               type: object
               required:
