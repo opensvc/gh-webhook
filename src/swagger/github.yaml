@@ -190,7 +190,7 @@ components:
             merged_at:
               type: string
             merged:
-              type: bool
+              type: boolean
             user:
               type: object
               required:
