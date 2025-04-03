@@ -185,10 +185,13 @@ components:
               type: string
             closed_at:
               type: string
+              nullable: true
             updated_at:
               type: string
+              nullable: true
             merged_at:
               type: string
+              nullable: true
             merged:
               type: boolean
             user:
