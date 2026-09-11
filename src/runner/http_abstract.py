@@ -4,6 +4,7 @@ from abc import abstractmethod
 
 import requests
 
+from bypass import ConditionNotMet
 from runner.runner_abstract import RunnerAbstract
 
 
@@ -15,7 +16,13 @@ class HttpRunnerAbstract(RunnerAbstract):
 
     def execute(self, job):
         url = job.uri
-        payload = job.payload
+        try:
+            payload = job.payload
+        except ConditionNotMet as e:
+            logging.info(e)
+            self._status = 200
+            self._data = {"message": "ConditionNotMet: %s" % e}
+            return
         verb = self.verb
         logging.info(f'request sending {verb} {url}')
         logging.info(f'request payload {json.dumps(payload, indent=4)}')
