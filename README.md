@@ -191,6 +191,29 @@ This class must define method: `def __call__(context: Context):` that will provi
         api_version = tag_name.split(".")[0]
         return "%s/%s/%s" % (job.release_base_dir, api_version, tag_name)
 
+### skip draft pull requests
+
+`context.draft` tells if the pull request is a draft. A payload lib can raise
+`ConditionNotMet` to skip the job (the webhook answers 200 and nothing is posted):
+
+    from bypass import ConditionNotMet
+
+    if context.draft:
+        raise ConditionNotMet("Skipped on draft pull request")
+
+GitHub sends `opened`, `synchronize` and `reopened` actions for draft pull requests too,
+and sends `ready_for_review` when the draft is marked ready. Map this event so the job
+starts at that moment:
+
+    "pull_request:ready_for_review": {
+      "runner_lib": "http_post",
+      "uri": "https://rundeck.domain/api/27/job/job-xxx-pr/run",
+      "credentials": {"X-Rundeck-Auth-Token": "the-job-token"},
+      "payload_lib": "opensvc_agent_qa_run_pull_request_skip_draft"
+    }
+
+See `extra_lib_examples/job_payload/opensvc_agent_qa_run_pull_request_skip_draft.py`.
+
 ## Example of github event listener for github pull requests
 
     from job.factory import JobFactory

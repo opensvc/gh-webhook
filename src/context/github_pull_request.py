@@ -15,6 +15,10 @@ class Context(GitHubAbstract):
         return self.payload['number']
 
     @property
+    def draft(self):
+        return self.pull_request.get('draft', False)
+
+    @property
     def action(self):
         return self.payload['action']
 
@@ -23,6 +27,7 @@ class Context(GitHubAbstract):
         return {
             'event': 'pull_request',
             'action': self.action,
+            'draft': self.draft,
             'pull_request_number': self.pull_request_number,
             'login': self.pull_request['user']['login'],
             'url': self.url,
