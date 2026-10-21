@@ -15,6 +15,7 @@ paths:
             type: string
             enum:
               - pull_request
+              - ping
           required: true
         - in: header
           name: X-Hub-Signature
@@ -51,6 +52,7 @@ paths:
             type: string
             enum:
               - push
+              - ping
           required: true
         - in: header
           name: X-Hub-Signature
@@ -87,6 +89,7 @@ paths:
             type: string
             enum:
               - release
+              - ping
           required: true
         - in: header
           name: X-Hub-Signature
@@ -119,21 +122,27 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/PullRequest'
+            oneOf:
+              - $ref: '#/components/schemas/PullRequest'
+              - $ref: '#/components/schemas/Ping'
     Push:
       description: A JSON for push event
       required: true
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Push'
+            oneOf:
+              - $ref: '#/components/schemas/Push'
+              - $ref: '#/components/schemas/Ping'
     Release:
       description: A JSON for release event
       required: true
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Release'
+            oneOf:
+              - $ref: '#/components/schemas/Release'
+              - $ref: '#/components/schemas/Ping'
   schemas:
     DefaultResponse:
       description: default response
@@ -297,6 +306,19 @@ components:
               type: string
               pattern: ^https://[a-z0-9/.-]+$
               maxLength: 200
+    Ping:
+      description: github ping event, sent when a webhook is created or re-activated
+      type: object
+      required:
+        - zen
+        - hook_id
+      properties:
+        zen:
+          type: string
+        hook_id:
+          type: integer
+        hook:
+          type: object
     Error:
       type: object
       required:
